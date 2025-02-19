@@ -1,5 +1,16 @@
 
+if (!requireNamespace("digest", quietly = TRUE)) {
+  stop("Package 'digest' is needed for hashing. Please install it.")
+}
+
+if (!requireNamespace("futile.logger", quietly = TRUE)) {
+  stop("Package 'futile.logger' is needed for hashing. Please install it.")
+}
+
 library(digest)
+library(futile.logger)
+
+flog.info("Initializing PPRL")
 
 # Global constants for configuration
 MAX_POSITION <- as.integer(Sys.getenv("PPRL_MAX_POSITION", unset = "1000"))
@@ -13,11 +24,10 @@ precompute_salts <- function(num_positions, salt_length) {
   })
 }
 
-# Precompute salts
 precomputed_salts <- precompute_salts(MAX_POSITION + OFFSET_RANGE, SALT_LENGTH)
+flog.trace("Precomputed salts: ", precomputed_salts)
 
-# Function to generate substrings of length 3 with offsets and precomputed salts
-generate_hashed_substrings_with_offsets <- function(text) {
+generate_hashed_substrings <- function(text) {
   n <- nchar(text)
   if (n < 3) {
     return("")  # Return an empty string if the text is shorter than 3 characters
@@ -25,6 +35,7 @@ generate_hashed_substrings_with_offsets <- function(text) {
 
   # Helper function to hash a substring with offset-based salt
   hash_with_salt_and_offset <- function(substring, position) {
+    flog.debug("Got text for hashing: ", substring)
     results <- sapply(-OFFSET_RANGE:OFFSET_RANGE, function(offset) {
       new_pos <- position + offset
       if (new_pos >= 0 && new_pos <= MAX_POSITION) {
@@ -33,6 +44,7 @@ generate_hashed_substrings_with_offsets <- function(text) {
         hash <- digest(salted_input, algo = "sha512")
         paste0(hash, "_", new_pos, "_", salt)
       } else {
+        flog.debug("@ position: ", new_pos)
         NA
       }
     })

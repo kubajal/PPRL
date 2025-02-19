@@ -1,0 +1,14 @@
+Package: PPRL
+Title: PPRL
+Version: 0.0.1
+Description: A package for PPRL using Bloom filters.
+Author: Kuba Jalowiec
+Maintainer: Kuba Jalowiec <kuba.jalowiec@protonmail.com>
+License: GPL-3
+Encoding: UTF-8
+Imports:
+    futile.logger (>= 1.4.3),
+    digest,
+    tcltk,
+    readxl,
+    openxlsx
