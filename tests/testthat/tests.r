@@ -1,7 +1,4 @@
 #!/usr/bin/env Rscript
-if (!requireNamespace("testthat", quietly = TRUE)) {
-  install.packages("testthat")
-}
 
 library(PPRL)
 library(testthat)
@@ -22,7 +19,7 @@ test_that("generate_hashed_substrings handles exact-length input", {
   text <- "abc"
   result <- generate_hashed_substrings(text)
   expect_true(nchar(result) > 0, info = "Result should not be empty")
-  expect_match(result, "_1_", info = "The result should contain position")
+  expect_match(result, "1_", info = "The result should contain position")
 })
 
 test_that("generate_hashed_substrings handles longer text input", {

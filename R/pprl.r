@@ -10,8 +10,6 @@ if (!requireNamespace("futile.logger", quietly = TRUE)) {
 library(digest)
 library(futile.logger)
 
-flog.info("Initializing PPRL")
-
 # Global constants for configuration
 MAX_POSITION <- as.integer(Sys.getenv("PPRL_MAX_POSITION", unset = "1000"))
 OFFSET_RANGE <- as.integer(Sys.getenv("PPRL_OFFSET_RANGE", unset = "3"))
@@ -25,31 +23,33 @@ precompute_salts <- function(num_positions, salt_length) {
 }
 
 precomputed_salts <- precompute_salts(MAX_POSITION + OFFSET_RANGE, SALT_LENGTH)
-flog.trace("Precomputed salts: ", precomputed_salts)
+futile.logger::flog.debug("Precomputed salts: %s", precomputed_salts)
 
 generate_hashed_substrings <- function(text) {
+  futile.logger::flog.debug("Generating hashed substrings for %s", text)
   n <- nchar(text)
   if (n < 3) {
-    return("")  # Return an empty string if the text is shorter than 3 characters
+    return("")  # Return an empty string if the text is shorter than 3ch
   }
 
   # Helper function to hash a substring with offset-based salt
   hash_with_salt_and_offset <- function(substring, position) {
-    flog.debug("Got text for hashing: ", substring)
+    futile.logger::flog.debug("Got text for hashing: %s", substring)
     results <- sapply(-OFFSET_RANGE:OFFSET_RANGE, function(offset) {
-      new_pos <- position + offset
-      if (new_pos >= 0 && new_pos <= MAX_POSITION) {
-        salt <- precomputed_salts[[new_pos+1]]
-        salted_input <- paste0(salt, substring, new_pos)
+      pos <- position + offset
+      if (pos >= 0 && pos <= MAX_POSITION) {
+        salt <- precomputed_salts[[pos+1]]
+        salted_input <- paste0(salt, substring, pos)
         hash <- digest(salted_input, algo = "sha512")
-        paste0(hash, "_", new_pos, "_", salt)
+        futile.logger::flog.debug("  @ pos=%s salt=%s hash=%s", pos, salt, hash)
+        paste0(pos, "_", salt, "_", hash)
       } else {
-        flog.debug("@ position: ", new_pos)
         NA
       }
     })
-    results <- results[!is.na(results)]  # Remove NA values for out-of-bound offsets
-    paste(results, collapse = "$")
+    hashes <- results[!is.na(results)]
+    futile.logger::flog.debug("Joining %i hashes by '$'", length(hashes))
+    paste(hashes, collapse = "$")
   }
 
   # Generate and hash substrings with offsets and salts
