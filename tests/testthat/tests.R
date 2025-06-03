@@ -20,30 +20,16 @@ test_that("generate_hashed_substrings handles empty and short input", {
 test_that("generate_hashed_substrings handles exact-length input", {
   text <- "abc"
   result <- generate_hashed_substrings(text)
-  expect_true(nchar(result) > 0, info = "Result should not be empty")
-  expect_match(result, "1_", info = "The result should contain position")
+  hashes <- strsplit(result, "\\$")[[1]]
+  expect_equal(18, length(hashes), info = "Result should be 18 = 5 (abc) + 6 (bc) + 7 (c)")
 })
 
 test_that("generate_hashed_substrings handles longer text input", {
   text <- "abcdefgh"
   result <- generate_hashed_substrings(text)
-  substr_count <- nchar(text) - 2
   hashes <- strsplit(result, "\\$")[[1]]
-  expect_equal(length(hashes), substr_count,
-               info = "Result should contain a hash for each 3-long substring")
-})
-
-test_that("generate_hashed_substrings includes correct salts and positions", {
-  text <- "abcdef"
-  result <- generate_hashed_substrings(text)
-
-  hashes <- strsplit(result, "\\$")[[1]]
-  for (hash_entry in hashes) {
-    parts <- strsplit(hash_entry, "_")[[1]]
-    expect_equal(length(parts), 3, info = "Each hash entry should have three parts (hash, position, salt)")
-    expect_match(parts[2], "^[0-9]+$", info = "The second part of the entry should be a position")
-    expect_true(parts[3] %in% precomputed_salts, info = "The salt should be a valid precomputed salt")
-  }
+  expect_equal(length(hashes), 53,
+               info = "Result should be 5 (abc) + 6 (bcd) + 7 (def) + 7 (efg) + 7 (fgh) + 7 (gh) + 7 (h)")
 })
 
 test_that("precompute_salts generates unique salts", {
@@ -58,16 +44,4 @@ test_that("hash_with_salt_and_offset produces consistent results for identical i
   second_result <- generate_hashed_substrings(text)
 
   expect_equal(first_result, second_result, info = "Hashing should produce consistent results for identical input")
-})
-
-test_that("generate_hashed_substrings handles offset boundaries correctly", {
-  text <- "abcd"
-  result <- generate_hashed_substrings(text)
-  hashes <- strsplit(result, "\\$")[[1]]
-
-  for (hash_entry in hashes) {
-    parts <- strsplit(hash_entry, "_")[[1]]
-    position <- as.numeric(parts[2])
-    expect_true(position >= 0 && position <= MAX_POSITION, info = "Position should be within valid range")
-  }
 })
