@@ -15,6 +15,12 @@ install.packages('devtools')
 
 # Run tests
 
-```
+```bash
 Rscript -e "devtools::test()"
+```
+
+# GUI
+
+```bash
+Rscript -e "devtools::load_all(); PPRL::launch_app();"
 ```

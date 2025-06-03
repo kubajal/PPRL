@@ -1,1 +1,2 @@
 export(generate_hashed_substrings)
+export(launch_app)
