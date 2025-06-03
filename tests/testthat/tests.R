@@ -5,6 +5,8 @@ library(testthat)
 library(futile.logger)
 library(digest)
 
+futile.logger::flog.threshold(futile.logger::DEBUG)
+
 # -------------------------------------------------------------------
 # Unit Tests
 # -------------------------------------------------------------------
