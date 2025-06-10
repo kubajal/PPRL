@@ -87,3 +87,18 @@ test_that("calculate_fraction works for non-unique values 3", {
   fraction <- calculate_fraction(vector_a, vector_b)
   expect_equal(fraction, 2/3, info = "calculate_fraction should return correct fraction when values are non-unique")
 })
+
+test_that("calculate_fraction is 1 for the same person", {
+  similiarity <- calculate_similarity("First_Name#Last_Name#01-01-1111", "First_Name#Last_Name#01-01-1111")
+  expect_equal(similiarity, 1, info = "Similiarty for the same person should be 1")
+})
+
+test_that("calculate_fraction is close to 1 for similar persons", {
+  similiarity <- calculate_similarity("FirstName#LastName#01-01-1111", "First_Name#LastName#01-01-1111")
+  expect_gt(similiarity, 0.5)
+})
+
+test_that("calculate_fraction is 0 for completely different persons", {
+  similiarity <- calculate_similarity("aaa#bbb#01-01-1111", "ccc#ddd#02-02-2222")
+  expect_equal(similiarity, 0, info = "Similiarty for the completely different persons should be 0")
+})

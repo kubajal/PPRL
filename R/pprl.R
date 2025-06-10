@@ -72,3 +72,17 @@ calculate_fraction <- function(vector_a, vector_b) {
   result <- matching_count / (length(unique_all))
   result
 }
+
+calculate_similarity <- function(string_a, string_b) {
+  encoded_a <- generate_hashed_substrings(string_a)
+  encoded_b <- generate_hashed_substrings(string_b)
+  vector_a <- strsplit(encoded_a, "\\$")[[1]]
+  vector_b <- strsplit(encoded_b, "\\$")[[1]]
+  unique_vector_a <- unique(vector_a)
+  unique_vector_b <- unique(vector_b)
+
+  unique_all <- unique(c(unique_vector_a, unique_vector_b))
+  matching_count <- sum(unique_vector_a %in% unique_vector_b)
+  result <- matching_count / (length(unique_all))
+  result
+}
