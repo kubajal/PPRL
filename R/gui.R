@@ -1,5 +1,7 @@
 #!/usr/bin/env Rscript
 
+COLUMN_MAX <- config$COLUMN_WIDTH
+
 # -------------------------------------------------------------------
 # 1) Load Required Packages
 # -------------------------------------------------------------------
@@ -48,7 +50,7 @@ launch_app <- function() {
   # Truncate large strings for preview
   limit_text <- function(x, max_len = 30) {
     x_chr <- as.character(x)
-    too_long <- nchar(x_chr) > max_len
+    too_long <- nchar(x_chr, type = "width") > max_len
     x_chr[too_long] <- paste0(substr(x_chr[too_long], 1, max_len), "...")
     x_chr
   }
@@ -59,20 +61,28 @@ launch_app <- function() {
 
     df[] <- lapply(df, function(col) {
       if (is.character(col) || is.factor(col)) {
-        limit_text(col, 30)
+        limit_text(col, COLUMN_MAX)
       } else {
         col
       }
     })
 
+    # Use display width to compute column widths
     col_widths <- sapply(names(df), function(col_name) {
-      max(nchar(c(as.character(df[[col_name]]), col_name)))
+      max(nchar(c(as.character(df[[col_name]]), col_name), type = "width"))
     })
-
     col_widths <- col_widths + 3
 
+    # Function to pad string to desired display width
+    pad_to_width <- function(x, width) {
+      x <- as.character(x)
+      actual_width <- nchar(x, type = "width")
+      padding <- pmax(0, width - actual_width)
+      paste0(x, strrep(" ", padding))
+    }
+
     format_row <- function(row) {
-      paste(mapply(sprintf, paste0("%-", col_widths, "s"), row), collapse = "")
+      paste(mapply(pad_to_width, limit_text(row), col_widths), collapse = "")
     }
 
     header <- format_row(names(df))

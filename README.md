@@ -13,10 +13,24 @@ install.packages('rlang')
 install.packages('devtools')
 ```
 
+# Options
+
+ - `MAX_POSITION` - maximum length of value to be hashed
+ - `OFFSET_RANGE` - range around the position of the substring where we attempt to do fuzzy match
+ - `SALT_LENGTH` - salt length
+ - `SUBSTRING_LENGTH` - length of the substring window that we do fuzzy match for
+ - `LOG_LEVEL` - `INFO`, `DEBUG` etc.
+
+# Example
+
+| ![Hashing example](img/hash.drawio.svg "Hashing example") | 
+|:--:| 
+| At position = 3 we have 5 different possible positions. Each position has its own salt. Hash is generated for each position. Config: OFFSET_RANGE=2 SUBSTRING_LENGTH=2 |
+
 # Run tests
 
 ```bash
-Rscript -e "devtools::test()"
+PPRL_LOG_LEVEL=DEBUG Rscript -e "devtools::test()"
 ```
 
 # GUI

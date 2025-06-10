@@ -10,11 +10,12 @@ if (!requireNamespace("futile.logger", quietly = TRUE)) {
 library(digest)
 library(futile.logger)
 
-# Global constants for configuration0
-config = list()
-config$MAX_POSITION <- as.integer(Sys.getenv("PPRL_MAX_POSITION", unset = "1000"))
-config$OFFSET_RANGE <- as.integer(Sys.getenv("PPRL_OFFSET_RANGE", unset = "3"))
-config$SALT_LENGTH <- as.integer(Sys.getenv("PPRL_SALT_LENGTH", unset = "32"))
+flog.threshold(config$LOG_LEVEL)
+
+futile.logger::flog.info("PPRL config:")
+for (key in names(config)) {
+  futile.logger::flog.info(paste0("  ", key, " : ", config[[key]]))
+}
 
 # Precompute salts for positions from -OFFSET_RANGE to (config$MAX_POSITION + config$OFFSET_RANGE)
 precompute_salts <- function(num_positions, salt_length) {
@@ -56,7 +57,7 @@ generate_hashed_substrings <- function(text) {
 
   # Generate and hash substrings with offsets and salts
   substrings <- sapply(1:n, function(i) {
-    substring <- substr(text, i, i + 2)
+    substring <- substr(text, i, i + config$SUBSTRING_LENGTH)
     hash_with_salt_and_offset(substring, i)
   })
 
