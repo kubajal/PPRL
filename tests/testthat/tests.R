@@ -5,8 +5,6 @@ library(testthat)
 library(futile.logger)
 library(digest)
 
-futile.logger::flog.threshold(futile.logger::DEBUG)
-
 # -------------------------------------------------------------------
 # Unit Tests
 # -------------------------------------------------------------------
@@ -44,4 +42,48 @@ test_that("hash_with_salt_and_offset produces consistent results for identical i
   second_result <- generate_hashed_substrings(text)
 
   expect_equal(first_result, second_result, info = "Hashing should produce consistent results for identical input")
+})
+
+test_that("hash_with_salt_and_offset produces consistent results for identical input", {
+  text <- "xyz"
+  first_result <- generate_hashed_substrings(text)
+  second_result <- generate_hashed_substrings(text)
+
+  expect_equal(first_result, second_result, info = "Hashing should produce consistent results for identical input")
+})
+
+test_that("hash_with_salt_and_offset produces consistent results for identical input", {
+  text <- "xyz"
+  first_result <- generate_hashed_substrings(text)
+  second_result <- generate_hashed_substrings(text)
+
+  expect_equal(first_result, second_result, info = "Hashing should produce consistent results for identical input")
+})
+
+test_that("calculate_fraction works for unique values", {
+  vector_a <- c("a", "b", "c", "d", "e")
+  vector_b <- c("b", "c", "d", "e", "f")
+  fraction <- calculate_fraction(vector_a, vector_b)
+  expect_equal(fraction, 2/3, info = "calculate_fraction should return correct fraction when values are unique")
+})
+
+test_that("calculate_fraction works for non-unique values 1", {
+  vector_a <- c("a", "a", "b", "c", "d", "e")
+  vector_b <- c("b", "c", "d", "e", "f")
+  fraction <- calculate_fraction(vector_a, vector_b)
+  expect_equal(fraction, 2/3, info = "calculate_fraction should return correct fraction when values are non-unique")
+})
+
+test_that("calculate_fraction works for non-unique values 2", {
+  vector_a <- c("a", "b", "c", "d", "e")
+  vector_b <- c("b", "b", "c", "d", "e", "f")
+  fraction <- calculate_fraction(vector_a, vector_b)
+  expect_equal(fraction, 2/3, info = "calculate_fraction should return correct fraction when values are non-unique")
+})
+
+test_that("calculate_fraction works for non-unique values 3", {
+  vector_a <- c("a", "a", "b", "c", "d", "e")
+  vector_b <- c("b", "b", "b", "c", "d", "e", "f")
+  fraction <- calculate_fraction(vector_a, vector_b)
+  expect_equal(fraction, 2/3, info = "calculate_fraction should return correct fraction when values are non-unique")
 })

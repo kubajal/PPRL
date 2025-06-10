@@ -63,3 +63,12 @@ generate_hashed_substrings <- function(text) {
 
   paste(substrings, collapse = "$")
 }
+
+calculate_fraction <- function(vector_a, vector_b) {
+  unique_vector_a <- unique(vector_a)
+  unique_vector_b <- unique(vector_b)
+  unique_all <- unique(c(vector_a, vector_b))
+  matching_count <- sum(unique_vector_a %in% unique_vector_b)
+  result <- matching_count / (length(unique_all))
+  result
+}
